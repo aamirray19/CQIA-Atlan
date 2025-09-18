@@ -3,15 +3,11 @@ import os
 import json
 from dotenv import load_dotenv
 
-# ------------------------
-# Load API Key
-# ------------------------
+
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# ------------------------
-# Code Duplication Agent
-# ------------------------
+
 class CodeDuplicationAgent:
     """
     Analyze code duplication across multiple payloads and store results in memory.
@@ -20,7 +16,7 @@ class CodeDuplicationAgent:
     def __init__(self, model="openai/gpt-oss-20b"):
         self.client = client
         self.model = model
-        self.report = []  # store results in-memory
+        self.report = []  
 
     def analyze_batch(self, payloads: list):
         """
@@ -67,7 +63,7 @@ class CodeDuplicationAgent:
         except json.JSONDecodeError:
             result = []
 
-        # Append to in-memory report
+        # Append to report
         self.report.extend(result)
         return result
 
@@ -76,52 +72,3 @@ class CodeDuplicationAgent:
         Return the cumulative report stored in memory.
         """
         return self.report
-
-# ------------------------
-# Example Usage
-# ------------------------
-if __name__ == "__main__":
-    agent = CodeDuplicationAgent()
-
-    # Two payloads with similar code to test duplication detection
-    test_payloads = [
-        {
-            "file_path": "C:\\Users\\aamir\\main.py",
-            "type": "function",
-            "name": "get_db_connection",
-            "lines_of_code": 8,
-            "raw_code": """def get_db_connection():
-    return psycopg2.connect(
-        host=os.getenv("DB_HOST", "db"),
-        database=os.getenv("DB_NAME", "speeddb"),
-        user=os.getenv("DB_USER", "speeduser"),
-        password=os.getenv("DB_PASS", "speedpass")
-    )""",
-            "ast_dump": "FunctionDef(name='get_db_connection', ...)",
-            "language": ".py"
-        },
-        {
-            "file_path": "C:\\Users\\aamir\\utils.py",
-            "type": "function",
-            "name": "connect_db",
-            "lines_of_code": 8,
-            "raw_code": """def connect_db():
-    return psycopg2.connect(
-        host=os.getenv("DB_HOST", "db"),
-        database=os.getenv("DB_NAME", "speeddb"),
-        user=os.getenv("DB_USER", "speeduser"),
-        password=os.getenv("DB_PASS", "speedpass")
-    )""",
-            "ast_dump": "FunctionDef(name='connect_db', ...)",
-            "language": ".py"
-        }
-    ]
-
-    # Analyze the batch of payloads
-    agent.analyze_batch(test_payloads)
-
-    # Get the final in-memory report
-    final_report = agent.get_final_report()
-
-    # Print nicely formatted JSON
-    print("Final Code Duplication Report:", json.dumps(final_report, indent=2))

@@ -3,15 +3,11 @@ import os
 import json
 from dotenv import load_dotenv
 
-# ------------------------
-# Load API Key
-# ------------------------
+
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# ------------------------
-# Complexity Analysis Agent
-# ------------------------
+
 class ComplexityAnalysisAgent:
     """
     Analyze code complexity across multiple payloads and store results in memory.
@@ -20,7 +16,7 @@ class ComplexityAnalysisAgent:
     def __init__(self, model="openai/gpt-oss-20b"):
         self.client = client
         self.model = model
-        self.report = []  # store results in-memory
+        self.report = []  
 
     def analyze_batch(self, payloads: list):
         """
@@ -69,7 +65,7 @@ class ComplexityAnalysisAgent:
         except json.JSONDecodeError:
             result = []
 
-        # Append to in-memory report
+        # Append to report
         self.report.extend(result)
         return result
 
@@ -79,45 +75,3 @@ class ComplexityAnalysisAgent:
         """
         return self.report
 
-# ------------------------
-# Example Usage
-# ------------------------
-if __name__ == "__main__":
-    agent = ComplexityAnalysisAgent()
-
-    test_payloads = [
-        {
-            "file_path": "C:\\Users\\aamir\\main.py",
-            "type": "function",
-            "name": "process_data",
-            "lines_of_code": 10,
-            "raw_code": """def process_data(data):
-    total = 0
-    for i in data:
-        if i % 2 == 0:
-            if i > 10:
-                if i < 100:
-                    total += i
-    return total""",
-            "ast_dump": "FunctionDef(name='process_data', ...)",
-            "language": ".py"
-        },
-        {
-            "file_path": "C:\\Users\\aamir\\main.py",
-            "type": "function",
-            "name": "simple_sum",
-            "lines_of_code": 2,
-            "raw_code": "def simple_sum(a, b): return a + b",
-            "ast_dump": "FunctionDef(name='simple_sum', ...)",
-            "language": ".py"
-        }
-    ]
-
-    # Analyze batch of payloads
-    agent.analyze_batch(test_payloads)
-
-    # Get final report in memory
-    final_report = agent.get_final_report()
-
-    # Print nicely formatted JSON
-    print("Final Complexity Report:", json.dumps(final_report, indent=2))

@@ -1,4 +1,3 @@
-# utils/vector_store.py
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
@@ -6,7 +5,6 @@ from typing import List, Dict, Any
 import os
 import json
 
-# Initialize embeddings (free, open-source)
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 
@@ -14,7 +12,6 @@ class VectorDB:
     def __init__(self, persist_dir="vector_db"):
         self.persist_dir = persist_dir
 
-        # Chroma instances for each namespace
         self.rag_store = Chroma(
             persist_directory=persist_dir,
             embedding_function=embeddings,
@@ -32,7 +29,7 @@ class VectorDB:
         """
         docs = [
             Document(
-                page_content=p.get("raw_code", ""),  # use raw_code instead of 'content'
+                page_content=p.get("raw_code", ""),  
                 metadata={"name": p.get("name"), "file_path": p.get("file_path")}
             )
             for p in payloads if "raw_code" in p

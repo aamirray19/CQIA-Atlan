@@ -3,15 +3,11 @@ import os
 import json
 from dotenv import load_dotenv
 
-# ------------------------
-# Load API Key
-# ------------------------
+
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# ------------------------
-# Performance Analysis Agent
-# ------------------------
+
 class PerformanceAnalysisAgent:
     """
     Analyze code performance issues across multiple payloads and store results in memory.
@@ -20,7 +16,7 @@ class PerformanceAnalysisAgent:
     def __init__(self, model="openai/gpt-oss-20b"):
         self.client = client
         self.model = model
-        self.report = []  # store results in-memory
+        self.report = []  
 
     def analyze_batch(self, payloads: list):
         """
@@ -66,7 +62,7 @@ class PerformanceAnalysisAgent:
         except json.JSONDecodeError:
             result = []
 
-        # Append to in-memory report
+        # Append to report
         self.report.extend(result)
         return result
 
@@ -75,48 +71,3 @@ class PerformanceAnalysisAgent:
         Return the cumulative performance report stored in memory.
         """
         return self.report
-
-# ------------------------
-# Example Usage
-# ------------------------
-if __name__ == "__main__":
-    agent = PerformanceAnalysisAgent()
-
-    test_payloads = [
-        {
-            "file_path": "C:\\Users\\aamir\\main.py",
-            "type": "function",
-            "name": "process_data",
-            "lines_of_code": 10,
-            "raw_code": """def process_data(data):
-    result = []
-    for i in data:
-        for j in data:
-            result.append(i * j)
-    return result""",
-            "ast_dump": "FunctionDef(name='process_data', ...)",
-            "language": ".py"
-        },
-        {
-            "file_path": "C:\\Users\\aamir\\utils.py",
-            "type": "function",
-            "name": "compute_sum",
-            "lines_of_code": 5,
-            "raw_code": """def compute_sum(lst):
-    total = 0
-    for i in lst:
-        total += i
-    return total""",
-            "ast_dump": "FunctionDef(name='compute_sum', ...)",
-            "language": ".py"
-        }
-    ]
-
-    # Analyze batch of payloads
-    agent.analyze_batch(test_payloads)
-
-    # Get final report in memory
-    final_report = agent.get_final_report()
-
-    # Print nicely formatted JSON
-    print("Final Performance Report:", json.dumps(final_report, indent=2))

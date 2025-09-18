@@ -3,15 +3,12 @@ import os
 import json
 from dotenv import load_dotenv
 
-# ------------------------
-# Load API Key
-# ------------------------
+
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# ------------------------
+
 # General Quality Analysis Agent
-# ------------------------
 class QualityAnalysisAgent:
     """
     Analyze code for multiple quality aspects:
@@ -89,7 +86,6 @@ class QualityAnalysisAgent:
             if isinstance(result, list):
                 self.report.extend(result)
         except (json.JSONDecodeError, AttributeError):
-            # If parsing fails, keep empty report
             pass
 
         return self.report
@@ -100,41 +96,3 @@ class QualityAnalysisAgent:
         """
         return self.report
 
-
-# ------------------------
-# Example Usage
-# ------------------------
-if __name__ == "__main__":
-    agent = QualityAnalysisAgent()
-
-    test_payloads = [
-        {
-            "file_path": "main.py",
-            "type": "function",
-            "name": "connect_db",
-            "lines_of_code": 8,
-            "raw_code": """def connect_db():
-    return psycopg2.connect(
-        host=os.getenv("DB_HOST", "db"),
-        database=os.getenv("DB_NAME", "speeddb"),
-        user=os.getenv("DB_USER", "speeduser"),
-        password=os.getenv("DB_PASS", "speedpass")
-    )""",
-            "ast_dump": "FunctionDef(name='connect_db', ...)",
-            "language": ".py"
-        },
-        {
-            "file_path": "utils.py",
-            "type": "function",
-            "name": "save_password",
-            "lines_of_code": 5,
-            "raw_code": """def save_password(password):
-    with open("passwords.txt", "a") as f:
-        f.write(password)""",
-            "ast_dump": "FunctionDef(name='save_password', ...)",
-            "language": ".py"
-        }
-    ]
-
-    agent.analyze_batch(test_payloads)
-    print(json.dumps(agent.get_final_report(), indent=2))

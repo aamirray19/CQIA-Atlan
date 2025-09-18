@@ -5,15 +5,10 @@ from groq import Groq
 import os
 from dotenv import load_dotenv
 
-# -----------------------------
-# Load Groq API
-# -----------------------------
+
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# -----------------------------
-# Free Embeddings
-# -----------------------------
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 class RAGChatbot:
@@ -66,7 +61,7 @@ class RAGChatbot:
         try:
             answer = response.choices[0].message.content
         except Exception:
-            answer = "⚠️ Failed to generate answer."
+            answer = "Failed to generate answer."
 
         return answer
 

@@ -13,9 +13,7 @@ class RAGPayloadBuilder:
         """Initializes the RAGPayloadBuilder."""
         pass
 
-    # -------------------------
-    # Public Entrypoint
-    # -------------------------
+
     def build_payloads(self, files: List[Path]) -> List[Dict[str, Any]]:
         """
         Processes a list of files and generates a flat list of RAG payloads.
@@ -35,7 +33,6 @@ class RAGPayloadBuilder:
                 })
                 continue
 
-            # Create a single, generic payload for the entire file.
             payloads.append({
                 "file_path": str(file_path),
                 "type": "file",

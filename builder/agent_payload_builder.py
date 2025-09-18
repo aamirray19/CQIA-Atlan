@@ -56,9 +56,8 @@ class AgentPayloadBuilder:
             "parsing_error": error
         }
 
-    # -------------------------
-    # Python
-    # -------------------------
+
+    # Python Payload builder 
     @staticmethod
     def _python_payload(file_path: Path, code: str) -> List[Dict[str, Any]]:
         try:
@@ -66,7 +65,6 @@ class AgentPayloadBuilder:
             if hasattr(ast, 'fix_missing_locations'):
                 ast.fix_missing_locations(tree)
         except Exception as e:
-            # Fallback for Python parsing errors
             error_message = f"Python parse error: {str(e)}"
             return [AgentPayloadBuilder._create_file_fallback_payload(file_path, code, error_message)]
 
@@ -108,20 +106,16 @@ class AgentPayloadBuilder:
             
         return payloads
 
-    # -------------------------
+
     # JavaScript
-    # -------------------------
     @staticmethod
     def _js_payload(file_path: Path, code: str) -> List[Dict[str, Any]]:
         try:
-            # Try parsing as a module first to support import/export
             tree = esprima.parseModule(code, options={'tolerant': True, 'loc': True, 'jsx': True})
         except Exception:
             try:
-                # Fallback to parsing as a script
                 tree = esprima.parseScript(code, options={'tolerant': True, 'loc': True, 'jsx': True})
             except Exception as e:
-                # If both fail, create a file-level payload
                 error_message = f"JS parse error: {str(e)}"
                 return [AgentPayloadBuilder._create_file_fallback_payload(file_path, code, error_message)]
 
@@ -130,13 +124,11 @@ class AgentPayloadBuilder:
             node_type_str = ""
             node_name = "<anonymous>"
             
-            # Standard function/class declarations
             if node.type in ["FunctionDeclaration", "ClassDeclaration"]:
                 node_type_str = "function" if node.type == "FunctionDeclaration" else "class"
                 if node.id:
                     node_name = node.id.name
 
-            # Arrow function components: const MyComponent = () => { ... }
             elif node.type == "VariableDeclaration":
                 for declaration in node.declarations:
                     if declaration.init and declaration.init.type in ["ArrowFunctionExpression", "FunctionExpression"]:

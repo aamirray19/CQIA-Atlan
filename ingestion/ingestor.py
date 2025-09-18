@@ -1,67 +1,3 @@
-# # ingestion/ingestor.py
-# import os
-# import tempfile
-# import shutil
-# from pathlib import Path
-# from typing import List
-# import git
-
-# from .filters import FileFilter
-
-# class Ingestor:
-#     """Unified ingestor for files, folders, and GitHub repos."""
-
-#     def __init__(self, allowed_extensions: List[str] = None):
-#         """
-#         :param allowed_extensions: list of extensions to ingest. None = all files
-#         """
-#         self.file_filter = FileFilter(allowed_extensions=allowed_extensions)
-
-#     def ingest_file(self, file_path: str) -> List[Path]:
-#         file_path = Path(file_path).resolve()
-#         if not file_path.is_file():
-#             print(f"[Ingestor] File not found: {file_path}")
-#             return []
-#         if self.file_filter.is_valid_file(file_path):
-#             print(f"[Ingestor] Ingested file: {file_path}")
-#             return [file_path]
-#         return []
-
-#     def ingest_folder(self, folder_path: str) -> List[Path]:
-#         folder_path = Path(folder_path).resolve()
-#         if not folder_path.is_dir():
-#             print(f"[Ingestor] Folder not found: {folder_path}")
-#             return []
-#         files = self.file_filter.filter_files_in_folder(folder_path)
-#         print(f"[Ingestor] Ingested folder: {folder_path}, files={len(files)}")
-#         return files
-
-#     def ingest_github_repo(self, repo_url: str, branch: str = "main") -> List[Path]:
-#         tmp_dir = tempfile.mkdtemp(prefix="repo_")
-#         repo_dir = Path(tmp_dir) / "repo"
-#         try:
-#             print(f"[Ingestor] Cloning {repo_url} (branch={branch})...")
-#             git.Repo.clone_from(repo_url, repo_dir, branch=branch)
-#             files = self.ingest_folder(repo_dir)
-#             return files
-#         except Exception as e:
-#             print(f"[Ingestor] Failed to clone repo {repo_url}: {e}")
-#             return []
-#         finally:
-#             shutil.rmtree(tmp_dir, ignore_errors=True)
-
-#     def ingest(self, path_or_url: str) -> List[Path]:
-#         """Decide automatically whether it's a file, folder, or GitHub repo."""
-#         path = Path(path_or_url)
-#         if path.is_file():
-#             return self.ingest_file(str(path))
-#         if path.is_dir():
-#             return self.ingest_folder(str(path))
-#         if path_or_url.startswith("http") and "github.com" in path_or_url:
-#             return self.ingest_github_repo(path_or_url)
-#         print(f"[Ingestor] Unsupported input: {path_or_url}")
-#         return []
-
 import os
 import subprocess
 import tempfile
@@ -79,14 +15,10 @@ def _on_rm_error(func, path, exc_info):
     If the error is for another reason, it re-raises the error.
     This is specifically to handle read-only files in .git directories on Windows.
     """
-    # Check if the error is an access error
     if not os.access(path, os.W_OK):
-        # Attempt to change the file to be writable
         os.chmod(path, stat.S_IWUSR)
-        # Retry the function that failed (e.g., os.remove)
         func(path)
     else:
-        # Re-raise the exception if it's not a permission issue
         raise
 
 class Ingestor:
@@ -154,7 +86,6 @@ class Ingestor:
         """
         ingested_data = {}
         for dirpath, dirnames, filenames in os.walk(root_dir, topdown=True):
-            # Filter out ignored directories in place
             dirnames[:] = [d for d in dirnames if d not in self.IGNORED_DIRECTORIES]
 
             for filename in filenames:
@@ -204,10 +135,8 @@ class Ingestor:
         temp_repo_path = self._clone_github_repo(repo_url)
         if temp_repo_path:
             try:
-                # ingest_folder already returns the desired dictionary format
                 return self.ingest_folder(temp_repo_path)
             finally:
                 print(f"Cleaning up temporary directory: {temp_repo_path}")
-                # Use the error handler to deal with read-only files in .git
                 shutil.rmtree(temp_repo_path, onerror=_on_rm_error)
         return {}
