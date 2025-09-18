@@ -11,45 +11,45 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 class FinalQualityReportAgent:
     """
-    Builds a consolidated final report from the general quality analysis agent.
+    Builds a consolidated final report from a JSON quality analysis report.
     Only includes major issues (Critical or High severity).
-    Uses Groq API instead of LangChain/OpenAI.
     """
 
     def __init__(self, model="openai/gpt-oss-20b"):
         self.model = model
 
-    def build_report(self, agent_report: list):
+    def build_report(self, report_json: list):
         """
-        agent_report: list of dicts from the general quality analysis agent
+        report_json: list of dicts representing issues
         """
-        # Filter only major issues (High or Critical)
-        major_issues = [issue for issue in agent_report if issue.get("severity") in ("High", "Critical")]
+        # Filter only major issues
+        major_issues = [issue for issue in report_json if issue.get("severity") in ("High", "Critical")]
         if not major_issues:
             return "No major issues found."
 
         system_prompt = """
         You are a final report builder AI.
-        You will receive JSON reports from a general quality analysis agent.
-        Each report contains issues with the following fields:
-        - agent (Security, Performance, Reliability, CodeDuplication, Complexity)
+        You will receive JSON reports with issues.
+        Each issue has:
+        - agent
         - location
         - error_description
         - fix_suggestion
-        - severity (Low, Medium, High, Critical)
+        - severity
 
-        Your task:
-        1. Include only major issues (High or Critical severity).
-        2. Output in a human-readable format (not JSON).
-        3. Each issue should show:
+        Task:
+        1. Include only major issues (High or Critical).
+        2. Output in a human-readable format.
+        3. Each issue shows:
            - Issue Type
            - Location
            - Error Description
            - Suggested Fix
            - Severity
 
-        Only include issues that could disrupt the working of the system.
-        Be concise and clear.
+        Include only issues that could disrupt system functionality.
+        Return the top 10 issues sorted by severity (Critical first).
+        Be concise.
         """
 
         user_prompt = json.dumps(major_issues, indent=2)
@@ -63,7 +63,6 @@ class FinalQualityReportAgent:
             temperature=0
         )
 
-        # Extract the content
         try:
             content = response.choices[0].message.content
         except (KeyError, IndexError):

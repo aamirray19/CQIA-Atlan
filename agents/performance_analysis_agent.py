@@ -47,7 +47,7 @@ class PerformanceAnalysisAgent:
         Only add high and critical issues, avoid noise.
         Make the output concise and to the point to save tokens.
         If no issues are detected, output [].
-        Don't add more than 10 issues.
+        Don't add more than 5 issues.
         Strictly avoid any extra text outside the JSON array.
         """
 
