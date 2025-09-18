@@ -31,6 +31,7 @@ class CodeDuplicationAgent:
         - Functions, methods, or classes that are almost identical
         - Repeated blocks of code with minor variations
         - Redundant logic that could be refactored into reusable components
+        - Or any other code duplication issues
 
         Output a STRICTLY valid JSON array of issues. Each issue must include:
         - agent: code duplication
@@ -41,7 +42,6 @@ class CodeDuplicationAgent:
         - severity: Low, Medium, High
         - explanation: a short reasoning why this duplication is a problem
 
-        Only add high and critical issues, avoid noise.
         Make the output concise and to the point to save tokens.
         If no issues are detected, output [].
         Don't add more than 5 issues.

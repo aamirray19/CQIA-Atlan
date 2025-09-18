@@ -31,6 +31,7 @@ class ReliabilityAgent:
         - Missing input validation
         - Operations that may crash under edge cases
         - Single points of failure
+        - Or any other reliabilty and fault tolerence issues
         
         Output a STRICTLY valid JSON array of issues. Each issue must have:
         - agent: reliability and fault tolerance
@@ -40,7 +41,6 @@ class ReliabilityAgent:
         - severity (Low, Medium, High, Critical)
         - explanation (why this is a reliability concern)
         
-        Only add high and critical issues, avoid noise.
         Make the output concise and to the point to save tokens.
         If no issues are detected, output [].
         Don't add more than 5 issues.

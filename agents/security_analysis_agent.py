@@ -31,6 +31,7 @@ class SecurityAnalysisAgent:
         - Command injection or unsafe eval/exec usage
         - Insecure use of external libraries
         - Missing input validation or improper sanitization
+        - Or any other security issues
         
         Output a STRICTLY valid JSON array of issues. Each issue must have:
         - agent: security
@@ -40,7 +41,6 @@ class SecurityAnalysisAgent:
         - severity (Low, Medium, High, Critical)
         - explanation (why this is a security concern)
 
-        Only add high and critical issues, avoid noise.
         Make the output concise and to the point to save tokens.
         If no issues are detected, output [].
         Don't add more than 5 issues.

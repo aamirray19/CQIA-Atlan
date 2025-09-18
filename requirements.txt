@@ -12,3 +12,4 @@ requests
 groq
 chromadb
 sentence-transformers
+langchain-community

@@ -62,8 +62,24 @@ class VectorDB:
         return self.report_store.similarity_search(query, k=k)
 
     def clear_all(self):
-        """Clears all documents in both namespaces."""
-        self.rag_store.delete_collection()
-        self.report_store.delete_collection()
-        self.rag_store.persist()
-        self.report_store.persist()
+        """Clears all documents in both namespaces and recreates collections."""
+        try:
+            self.rag_store.delete_collection()
+        except Exception:
+            pass
+        try:
+            self.report_store.delete_collection()
+        except Exception:
+            pass
+
+        # Recreate the stores after clearing
+        self.rag_store = Chroma(
+            persist_directory=self.persist_dir,
+            embedding_function=embeddings,
+            collection_name="rag_payloads"
+        )
+        self.report_store = Chroma(
+            persist_directory=self.persist_dir,
+            embedding_function=embeddings,
+            collection_name="ai_agent_reports"
+        )

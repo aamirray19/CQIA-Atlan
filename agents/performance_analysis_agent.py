@@ -31,6 +31,7 @@ class PerformanceAnalysisAgent:
         - Memory-heavy operations or large temporary objects
         - Poor algorithm choices (e.g., O(n^2) where O(n) possible)
         - Unnecessary computations or redundant code
+        - Or any other Performance issues
         
         Output a STRICTLY valid JSON array of issues. Each issue must have:
         - agent: performance
@@ -40,7 +41,6 @@ class PerformanceAnalysisAgent:
         - severity (Low, Medium, High, Critical)
         - explanation (why this is a performance concern)
         
-        Only add high and critical issues, avoid noise.
         Make the output concise and to the point to save tokens.
         If no issues are detected, output [].
         Don't add more than 5 issues.

@@ -42,8 +42,8 @@ class ComplexityAnalysisAgent:
         - fix_suggestion: suggest ways to simplify or refactor the code
         - severity: Low, Medium, High, Critical
         - explanation: a short reasoning why this is a problem
+        - Or any other complexity issues
 
-        Only add high and critical issues, avoid noise.
         Make the output concise and to the point to save tokens.
         If no issues are detected, output [].
         Don't add more than 5 issues.
